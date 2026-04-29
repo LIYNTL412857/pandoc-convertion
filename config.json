@@ -1,0 +1,5 @@
+{
+  "pandocPath": "./pandoc/pandoc.exe",
+  "timeout": 25000,
+  "maxFiles": 100
+}

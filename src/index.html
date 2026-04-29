@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      margin: 0;
+      min-width: 420px;
+      min-height: 600px;
+      background: #f5f5f5;
+    }
+  </style>
+  <title>Pandoc 批量转换工具 📄 (多格式互转 + MD图片嵌入)</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- 最外层统一大容器，所有模块都包在里面 -->
+  <div class="main-wrap">
+    <!-- 主题切换按钮 -->
+    <div style="display: flex; justify-content: flex-end; margin-bottom: 16px;">
+      <button id="themeToggleBtn" class="file-btn themeToggleBtn" title="切换主题" display="width: 120px !important;">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" style="vertical-align: middle ">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" stroke="var(--text-light)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        切换主题
+      </button>
+    </div>
+    <!-- 新增：三栏横向容器 -->
+    <div class="row-container"> 
+      <!-- 文件选择区域 -->
+      <div class="panel">
+        <h3>
+          <svg width="16" height="14" viewBox="0 0 20 16" fill="none" style="vertical-align: middle ">
+          <path d="M2 16C1.45 16 0.979333 15.8043 0.588 15.413C0.196667 15.0217 0.000666667 14.5507 0 14V2C0 1.45 0.196 0.979333 0.588 0.588C0.98 0.196666 1.45067 0.000666667 2 0H8L10 2H18C18.55 2 19.021 2.196 19.413 2.588C19.805 2.98 20.0007 3.45067 20 4V14C20 14.55 19.8043 15.021 19.413 15.413C19.0217 15.805 18.5507 16.0007 18 16H2Z" fill="var(---------, #FFC107)"/>
+          </svg>
+          文件选择（支持拖拽）</h3>
+        <div class="btn-group">
+          <button id="selectFilesBtn" class="file-btn" title="选择要转换的文件">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" style="vertical-align: middle ">
+              <path d="M18.1425 18.1425L14.0668 14.0668M14.0668 14.0668C14.7639 13.3696 15.317 12.5419 15.6943 11.631C16.0716 10.7201 16.2658 9.74384 16.2658 8.75789C16.2658 7.77194 16.0716 6.79564 15.6943 5.88474C15.317 4.97384 14.7639 4.14618 14.0668 3.44901C13.3696 2.75184 12.5419 2.19881 11.631 1.8215C10.7201 1.4442 9.74384 1.25 8.75789 1.25C7.77194 1.25 6.79564 1.4442 5.88474 1.8215C4.97384 2.19881 4.14618 2.75184 3.44901 3.44901C2.04101 4.85701 1.25 6.76667 1.25 8.75789C1.25 10.7491 2.04101 12.6588 3.44901 14.0668C4.85701 15.4748 6.76667 16.2658 8.75789 16.2658C10.7491 16.2658 12.6588 15.4748 14.0668 14.0668Z" stroke="var(---------, #F0F0F0)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            浏览…
+          </button>
+          <button id="clearFilesBtn" disabled title="清空已选择的文件列表">
+            <svg width="16" height="17" viewBox="0 0 16 17" fill="none" style="vertical-align: middle ">
+            <path d="M15.9918 16.3442L14.8976 9.75127H15.2671C15.5644 9.75127 15.8039 9.50101 15.8039 9.19036V5.04822C15.8039 4.73756 15.5644 4.48731 15.2671 4.48731H10.1884V0.560914C10.1884 0.250254 9.94891 0 9.65162 0H6.34839C6.0511 0 5.81162 0.250254 5.81162 0.560914V4.48731H0.732904C0.435613 4.48731 0.196129 4.73756 0.196129 5.04822V9.19036C0.196129 9.50101 0.435613 9.75127 0.732904 9.75127H1.10245L0.0082581 16.3442C0.00206455 16.3765 0 16.4089 0 16.4391C0 16.7497 0.239484 17 0.536775 17H15.4632C15.4942 17 15.5252 16.9978 15.5541 16.9914C15.8472 16.9396 16.0434 16.6483 15.9918 16.3442ZM1.64129 5.99746H7.25678V1.51015H8.74323V5.99746H14.3587V8.24112H1.64129V5.99746ZM11.3032 15.4898V12.1244C11.3032 12.0294 11.2289 11.9518 11.1381 11.9518H10.1471C10.0563 11.9518 9.98195 12.0294 9.98195 12.1244V15.4898H6.01807V12.1244C6.01807 12.0294 5.94375 11.9518 5.85291 11.9518H4.86194C4.7711 11.9518 4.69678 12.0294 4.69678 12.1244V15.4898H1.61652L2.54762 9.88071H13.4503L14.3814 15.4898H11.3032Z" fill="var(---------, #F0F0F0)"/>
+            </svg>
+            清空
+          </button>
+        </div>
+        <ul id="fileList" class="file-list"></ul>
+      </div>
+
+
+      <!-- 格式设置区域 -->
+      <div class="mid panel" >
+        <h3>
+          <svg width="15" height="15" viewBox="0 0 20 20" fill="none" style="vertical-align: middle ">
+          <path d="M12.4025 1.20392C12.2615 0.503683 11.6463 0 10.932 0H8.23151C7.51705 0 6.90175 0.503914 6.76093 1.20436L6.51322 2.43652C6.44938 2.75407 6.23361 3.0172 5.94712 3.16833C5.77729 3.25792 5.61086 3.35374 5.44818 3.45559C5.17461 3.62688 4.84008 3.68166 4.53416 3.57875L3.3203 3.17043C2.64479 2.9432 1.90265 3.22267 1.54482 3.83905L0.202801 6.15071C-0.157703 6.77169 -0.0275734 7.56105 0.513178 8.03346L1.46061 8.86113C1.70517 9.07478 1.82637 9.39377 1.8146 9.7183C1.80779 9.90604 1.80779 10.094 1.8146 10.2817C1.82637 10.6062 1.70517 10.9252 1.46061 11.1389L0.513326 11.9664C-0.0274917 12.4389 -0.15758 13.2284 0.203063 13.8494L1.54578 16.1614C1.90361 16.7776 2.64551 17.057 3.32089 16.8299L4.535 16.4218C4.84046 16.3191 5.17443 16.3736 5.44758 16.5446C5.60972 16.6461 5.77595 16.7419 5.94608 16.8316C6.23307 16.9829 6.44947 17.2463 6.51341 17.5644L6.76093 18.7956C6.90175 19.4961 7.51705 20 8.23151 20H10.9316C11.6461 20 12.2614 19.4961 12.4022 18.7956L12.6499 17.5635C12.7138 17.2459 12.9295 16.9828 13.216 16.8317C13.3859 16.7421 13.5523 16.6463 13.715 16.5444C13.9885 16.3731 14.3231 16.3183 14.629 16.4212L15.843 16.8296C16.5185 17.0568 17.2605 16.7775 17.6184 16.1612L18.9609 13.8496C19.3216 13.2285 19.1914 12.4389 18.6504 11.9664L17.7027 11.1389C17.458 10.9252 17.3368 10.6062 17.3486 10.2816C17.3554 10.0939 17.3554 9.906 17.3485 9.7183C17.3368 9.39377 17.458 9.07478 17.7025 8.86113L18.6498 8.03358C19.1906 7.56112 19.3207 6.77163 18.9601 6.15063L17.6174 3.83868C17.2596 3.22249 16.5176 2.9431 15.8422 3.17023L14.6296 3.57801C14.3238 3.68083 13.9895 3.62615 13.7161 3.45511C13.5534 3.35336 13.387 3.25765 13.2171 3.16816C12.9305 3.01714 12.7146 2.75404 12.6507 2.43645L12.4025 1.20392ZM9.58157 13.6364C8.61155 13.6364 7.68126 13.2532 6.99535 12.5713C6.30944 11.8893 5.9241 10.9644 5.9241 10C5.9241 9.03558 6.30944 8.11065 6.99535 7.4287C7.68126 6.74675 8.61155 6.36364 9.58157 6.36364C10.5516 6.36364 11.4819 6.74675 12.1678 7.4287C12.8537 8.11065 13.2391 9.03558 13.2391 10C13.2391 10.9644 12.8537 11.8893 12.1678 12.5713C11.4819 13.2532 10.5516 13.6364 9.58157 13.6364Z" fill="var(----, #3680FF)"/>
+          </svg>
+          格式设置（支持互转）</h3>
+        <div class="form-grid">
+          <label class="full-row" rowspan="2" style="justify-content:left;">
+            <svg width="17" height="18" viewBox="0 0 20 22" fill="none" style="vertical-align: middle ">
+            <path d="M3 10V3.00001C3 2.46957 3.21071 1.96087 3.58579 1.58579C3.96086 1.21072 4.46957 1.00001 5 1.00001H13C13.3169 0.99923 13.6308 1.06122 13.9236 1.18239C14.2164 1.30357 14.4823 1.48153 14.706 1.70601L18.294 5.29401C18.5185 5.51768 18.6964 5.78359 18.8176 6.0764C18.9388 6.36921 19.0008 6.68312 19 7.00001V19C19 19.5304 18.7893 20.0391 18.4142 20.4142C18.0391 20.7893 17.5304 21 17 21H5C4.46957 21 3.96086 20.7893 3.58579 20.4142C3.21071 20.0391 3 19.5304 3 19V18" stroke="var(----, #3680FF)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M13 1V6C13 6.26522 13.1054 6.51957 13.2929 6.70711C13.4804 6.89464 13.7348 7 14 7H19M1 14H11M11 14L8 17M11 14L8 11" stroke="var(----, #3680FF)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>&thinsp;
+            输入格式：&emsp;自动检测
+          </label>          
+          <label rowspan = "2">
+              <svg width="17" height="18" viewBox="0 0 20 22" fill="none" style="vertical-align: middle ">
+              <path d="M3.226 19.925C3.39515 20.2493 3.64997 20.5209 3.96274 20.7105C4.27552 20.9 4.63428 21.0001 5 21H17C17.5304 21 18.0391 20.7893 18.4142 20.4142C18.7893 20.0391 19 19.5304 19 19V7.00001C19.0008 6.68312 18.9388 6.36921 18.8176 6.0764C18.6964 5.78359 18.5185 5.51768 18.294 5.29401L14.706 1.70601C14.4823 1.48153 14.2164 1.30357 13.9236 1.18239C13.6308 1.06122 13.3169 0.99923 13 1.00001H5C4.46957 1.00001 3.96086 1.21072 3.58579 1.58579C3.21071 1.96087 3 2.46957 3 3.00001V6.12701" stroke="var(----, #3680FF)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M13 1V6C13 6.26522 13.1054 6.51957 13.2929 6.70711C13.4804 6.89464 13.7348 7 14 7H19M4 10L1 13M1 13L4 16M1 13H11" stroke="var(----, #3680FF)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>&thinsp;
+              输出格式:
+          </label>
+          <select id="outputFormat" class="checkbox three-row">
+            <option value="markdown" title="Pandoc’s Markdown">markdown</option>
+            <option value="docx" title="Word docx">docx</option>
+            <option value="pptx" title="PowerPoint">pptx</option>
+            <option value="json" title="JSON version of native AST">json</option>
+            <option value="gfm" title="GitHub-Flavored Markdown">gfm</option>
+            <option value="txt" title="Textile">txt</option>
+            <option value="epub" title="EPUB v3 book" selected>epub</option>
+            <option value="html" title="Html">html</option>
+            <option value="xml" title="XML version of native AST">xml</option>
+            <option value="odt" title="OpenDocument text document">odt</option>
+            <option value="rtf" title="Rich Text Format">rtf</option>
+            <option value="latex" title="LaTeX">latex</option>
+            <option value="ansi" title="text with ANSI escape codes, for terminal viewing">ansi</option>
+            <option value="asciidoc" title="modern AsciiDoc as interpreted by AsciiDoctor">asciidoc</option>
+            <option value="asciidoc_legacy" title="AsciiDoc as interpreted by asciidoc-py">asciidoc_legacy</option>
+            <option value="bbcode" title="BBCode">bbcode</option>
+            <option value="bbcode_fluxbb" title="BBCode (FluxBB)">bbcode_fluxbb</option>
+            <option value="bbcode_phpbb" title="BBCode (PHPBB)">bbcode_phpbb</option>
+            <option value="bbcode_steam" title="BBCode (Steam)">bbcode_steam</option>
+            <option value="bbcode_hubzilla" title="BBCode (Hubzilla)">bbcode_hubzilla</option>
+            <option value="bbcode_xenforo" title="BBCode (XenForo)">bbcode_xenforo</option>
+            <option value="beamer" title="LaTeX beamer slide show">beamer</option>
+            <option value="bibtex" title="BibTeX bibliography">bibtex</option>
+            <option value="biblatex" title="BibLaTeX bibliography">biblatex</option>
+            <option value="chunkedhtml" title="zip archive of multiple linked HTML files">chunkedhtml</option>
+            <option value="commonmark" title="CommonMark Markdown">commonmark</option>
+            <option value="commonmark_x" title="CommonMark Markdown with extensions">commonmark_x</option>
+            <option value="context" title="ConTeXt">context</option>
+            <option value="csljson" title="CSL JSON bibliography">csljson</option>
+            <option value="djot" title="Djot markup">djot</option>
+            <option value="docbook" title="DocBook 4">docbook</option>
+            <option value="docbook5" title="DocBook 5">docbook5</option>
+            <option value="dokuwiki" title="DokuWiki markup">dokuwiki</option>
+            <option value="epub2" title="EPUB v2">epub2</option>
+            <option value="fb2" title="FictionBook2 e-book">fb2</option>
+            <option value="haddock" title="Haddock markup">haddock</option>
+            <option value="html4" title="XHTML 1.0 Transitional">html4</option>
+            <option value="icml" title="InDesign ICML">icml</option>
+            <option value="ipynb" title="Jupyter Notebook">ipynb</option>
+            <option value="jats_archiving" title="JATS XML, Archiving and Interchange Tag Set">jats_archiving</option>
+            <option value="jats_articleauthoring" title="JATS XML, Article Authoring Tag Set">jats_articleauthoring</option>
+            <option value="jats_publishing" title="JATS XML, Journal Publishing Tag Set">jats_publishing</option>
+            <option value="jira" title="Jira/Confluence wiki markup">jira</option>
+            <option value="man" title="roff man">man</option>
+            <option value="markdown_mmd" title="MultiMarkdown">markdown_mmd</option>
+            <option value="markdown_phpextra" title="PHP Markdown Extra">markdown_phpextra</option>
+            <option value="markdown_strict" title="original unextended Markdown">markdown_strict</option>
+            <option value="markua" title="Markua">markua</option>
+            <option value="mediawiki" title="MediaWiki markup">mediawiki</option>
+            <option value="ms" title="roff ms">ms</option>
+            <option value="muse" title="Muse">muse</option>
+            <option value="native" title="native Haskell">native</option>
+            <option value="opml" title="OPML">opml</option>
+            <option value="opendocument" title="OpenDocument XML">opendocument</option>
+            <option value="org" title="Emacs Org mode">org</option>
+            <option value="plain" title="Plain Text">plain</option>
+            <option value="rst" title="reStructuredText">rst</option>
+            <option value="texinfo" title="GNU Texinfo">texinfo</option>
+            <option value="textile" title="Textile">textile</option>
+            <option value="slideous" title="Slideous HTML and JavaScript slide show">slideous</option>
+            <option value="slidy" title="Slidy HTML and JavaScript slide show">slidy</option>
+            <option value="dzslides" title="DZSlides HTML5 + JavaScript slide show">dzslides</option>
+            <option value="revealjs" title="reveal.js HTML5 + JavaScript slide show">revealjs</option>
+            <option value="s5" title="S5 HTML and JavaScript slide show">s5</option>
+            <option value="tei" title="TEI Simple">tei</option>
+            <option value="typst" title="Typst">typst</option>
+            <option value="vimdoc" title="Vimdoc">vimdoc</option>
+            <option value="xwiki" title="XWiki markup">xwiki</option>
+            <option value="zimwiki" title="ZimWiki markup">zimwiki</option>
+          </select>
+
+          <label rowspan="3">
+            <svg width="16" height="14" viewBox="0 0 20 16" fill="none" style="vertical-align: middle ">
+            <path d="M2 16C1.45 16 0.979333 15.8043 0.588 15.413C0.196667 15.0217 0.000666667 14.5507 0 14V2C0 1.45 0.196 0.979333 0.588 0.588C0.98 0.196666 1.45067 0.000666667 2 0H8L10 2H18C18.55 2 19.021 2.196 19.413 2.588C19.805 2.98 20.0007 3.45067 20 4V14C20 14.55 19.8043 15.021 19.413 15.413C19.0217 15.805 18.5507 16.0007 18 16H2Z" fill="var(---------, #FFC107)"/>
+            </svg>
+            输出路径:
+          </label>
+          <div class="output-row two-row">
+            <span id="outputPathText" class="output-path">未选择</span>
+          </div>
+          <button id="selectOutputBtn" class="file-btn" title="选择转换文件的输出目录">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" style="vertical-align: middle ">
+              <path d="M18.1425 18.1425L14.0668 14.0668M14.0668 14.0668C14.7639 13.3696 15.317 12.5419 15.6943 11.631C16.0716 10.7201 16.2658 9.74384 16.2658 8.75789C16.2658 7.77194 16.0716 6.79564 15.6943 5.88474C15.317 4.97384 14.7639 4.14618 14.0668 3.44901C13.3696 2.75184 12.5419 2.19881 11.631 1.8215C10.7201 1.4442 9.74384 1.25 8.75789 1.25C7.77194 1.25 6.79564 1.4442 5.88474 1.8215C4.97384 2.19881 4.14618 2.75184 3.44901 3.44901C2.04101 4.85701 1.25 6.76667 1.25 8.75789C1.25 10.7491 2.04101 12.6588 3.44901 14.0668C4.85701 15.4748 6.76667 16.2658 8.75789 16.2658C10.7491 16.2658 12.6588 15.4748 14.0668 14.0668Z" stroke="var(---------, #F0F0F0)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            浏览…
+          </button>
+          
+          <div class="full-row"> 
+            <label>
+              <input type="checkbox" id="autoUpdateOutputFolder" checked >
+              输出路径自动更新<br>
+              <label style="color:#666;font-size:10px">（根据最后添加的文件所在目录）</label>
+            </label>
+
+            <label class="right">
+              <input type="checkbox" id="embedImages" checked >           
+              嵌入图片<br>
+              <label style="color:#666;font-size:10px">（仅Markdown输入生效）</label>
+            </label>
+
+          </div>
+
+          <label colspan="3">
+            <svg width="18" height="18" viewBox="0 0 23 23" fill="none" style="vertical-align: middle ">
+            <path d="M8.875 17.875V17.7546C8.875 16.8602 8.317 16.0806 7.61838 15.5226C6.70652 14.7954 6.04326 13.8028 5.72039 12.682C5.39752 11.5613 5.43101 10.3679 5.81623 9.26701C6.20145 8.16615 6.91934 7.21224 7.87055 6.53733C8.82176 5.86241 9.95924 5.49987 11.1256 5.49987C12.2919 5.49987 13.4294 5.86241 14.3806 6.53733C15.3318 7.21224 16.0497 8.16615 16.4349 9.26701C16.8201 10.3679 16.8536 11.5613 16.5307 12.682C16.2079 13.8028 15.5446 14.7954 14.6328 15.5226C13.933 16.0818 13.375 16.8602 13.375 17.7546V17.875M8.875 17.875V20.125C8.875 20.4234 8.99353 20.7095 9.20451 20.9205C9.41548 21.1315 9.70163 21.25 10 21.25H12.25C12.5484 21.25 12.8345 21.1315 13.0455 20.9205C13.2565 20.7095 13.375 20.4234 13.375 20.125V17.875M8.875 17.875H13.375M20.125 11.125H21.25M2.125 11.125H1M11.125 2.125V1M17.4891 4.76087L18.2845 3.9655M4.762 4.76087L3.9655 3.9655M11.125 14.5V12.25" stroke="var(---------, #FFC107)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg> 
+            提示：
+          </label>
+
+          <div style="
+                width: auto;       /* 你想要的宽度 */
+                height: 180px;      /* 限制高度，核心 */
+                border: 1px solid #ccc;
+                padding: 8px;
+                overflow-y: auto;   /* 垂直自动滚动条 */
+                overflow-x: hidden; /* 禁止横向滚动 */
+                margin-top: -8px;
+              " class=" full-row tip " >
+
+            <label>
+              接受的输入格式：<br>
+              <label style="padding-inline-start: 1em; display: inline-block;" >
+                  · asciidoc (AsciiDoc markup)<br>
+                  · bibtex (BibTeX bibliography)<br>
+                  · biblatex (BibLaTeX bibliography)<br>
+                  · bits (BITS XML, alias for jats)<br>
+                  · commonmark (CommonMark Markdown)<br>
+                  · commonmark_x (CommonMark Markdown with extensions)<br>
+                  · creole (Creole 1.0)<br>
+                  · csljson (CSL JSON bibliography)<br>
+                  · csv (CSV table)<br>
+                  · tsv (TSV table)<br>
+                  · djot (Djot markup)<br>
+                  · docbook (DocBook)<br>
+                  · docx (Word docx)<br>
+                  · dokuwiki (DokuWiki markup)<br>
+                  · endnotexml (EndNote XML bibliography)<br>
+                  · epub (EPUB)<br>
+                  · fb2 (FictionBook2 e-book)<br>
+                  · gfm (GitHub-Flavored Markdown)<br>        
+                  · html (HTML)<br>
+                  · ipynb (Jupyter notebook)<br>
+                  · jats (JATS XML)<br>
+                  · jira (Jira/Confluence wiki markup)<br>
+                  · json (JSON version of native AST)<br>
+                  · latex (LaTeX)</br>
+                  · markdown (Pandoc’s Markdown)<br>
+                  · markdown_mmd (MultiMarkdown)</br>
+                  · markdown_phpextra (PHP Markdown Extra)<br>
+                  · markdown_strict (original unextended Markdown)</br>
+                  · mediawiki (MediaWiki markup)<br>
+                  · man (roff man)</br>
+                  · mdoc (mdoc manual page markup)<br>
+                  · muse (Muse)</br>
+                  · native (native Haskell)<br>
+                  · odt (OpenDocument text document)</br>
+                  · opml (OPML)<br>
+                  · org (Emacs Org mode)</br>
+                  · pod (Perl’s Plain Old Documentation)<br>
+                  · pptx (PowerPoint)</br>
+                  · ris (RIS bibliography)<br>
+                  · rtf (Rich Text Format)</br>
+                  · rst (reStructuredText)<br>
+                  · t2t (txt2tags)</br>
+                  · textile (Textile)<br>
+                  · tikiwiki (TikiWiki markup)</br>
+                  · twiki (TWiki markup)<br>
+                  · typst (typst)</br>
+                  · vimwiki (Vimwiki)<br>
+                  · xlsx (Excel spreadsheet)</br>
+                  · xml (XML version of native AST)<br>
+              </label>
+            </label>
+          </div>
+        </div>
+      </div>
+      <!-- 日志区域 -->
+      <div class="panel">
+        <h3>
+          <svg width="21" height="16" viewBox="0 0 21 16" fill="none" style="vertical-align: middle ">
+          <path d="M9 3H0V5H9V3ZM9 11H0V13H9V11Z" fill="var(----, #3680FF)"/>
+          <path d="M17.6 8L19 9.4L16.4 12L19 14.6L17.6 16L15 13.4L12.4 16L11 14.6L13.6 12L11 9.4L12.4 8L15 10.6L17.6 8Z" fill="var(----------, #DC3545)"/>
+          <path d="M11 3.5L14.5 7L20.1 1.4L18.7 0L14.5 4.2L12.4 2.1L11 3.5Z" fill="var(----------, #28A745)"/>
+          </svg>
+          转换日志</h3>
+        <div class="btn-group right">
+          <button id="clearLogBtn" title="清空转换日志">
+            <svg width="18" height="20" viewBox="0 0 18 20" fill="none" style="vertical-align: middle ">
+            <path d="M9.79297 0.5L15.5 6.20703V9.67676C15.3714 9.64564 15.2413 9.61849 15.1104 9.5957C14.9093 9.56072 14.7058 9.53525 14.5 9.51953V6.5H9.5V1.5H1.5V18.5H8.00586C8.12503 18.7904 8.26261 19.0682 8.4209 19.332C8.45499 19.3889 8.49147 19.4445 8.52734 19.5H2C1.58354 19.5 1.23963 19.3578 0.941406 19.0596C0.680392 18.7986 0.538542 18.5021 0.506836 18.1523L0.5 17.999V2C0.5 1.58381 0.642609 1.2397 0.941406 0.941406C1.20313 0.68025 1.49936 0.538592 1.84766 0.506836L2.00098 0.5H9.79297ZM16.7949 13.9023L15.0693 15.6484L14.7217 16L15.0693 16.3516L16.7949 18.0967L16.0967 18.7949L14.3516 17.0693L14 16.7217L13.6484 17.0693L11.9023 18.7949L11.207 18.0996L13.3066 16L11.207 13.9004L11.9004 13.207L14 15.3066L16.0996 13.207L16.7949 13.9023Z" fill="var(---------, #F0F0F0)" stroke="var(---------, #F0F0F0)"/>
+            </svg>
+            清空日志
+          </button>
+        </div>
+        <div id="logContainer" class="log-container"></div>
+      </div>
+    </div>
+      
+    <!-- 转换控制区域 -->
+    <div class="panel">
+      <h3>
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" style="vertical-align: middle ">
+        <path d="M1 10C1.24493 10 1.48134 10.09 1.66437 10.2527C1.84741 10.4155 1.96434 10.6397 1.993 10.883L2 11V14C2.00003 14.2449 2.08996 14.4813 2.25272 14.6644C2.41547 14.8474 2.63975 14.9643 2.883 14.993L3 15H6.585L5.293 13.707C5.12082 13.5348 5.01739 13.3057 5.00211 13.0627C4.98683 12.8197 5.06075 12.5794 5.21 12.387L5.293 12.293C5.46519 12.1208 5.69429 12.0174 5.93732 12.0021C6.18034 11.9868 6.4206 12.0607 6.613 12.21L6.707 12.293L9.707 15.293C9.82115 15.4046 9.90633 15.5423 9.95513 15.6943C10.0039 15.8462 10.0149 16.0078 9.987 16.165L9.951 16.311L9.911 16.415C9.85354 16.5422 9.77008 16.656 9.666 16.749L6.707 19.707C6.52704 19.8863 6.28557 19.9905 6.03162 19.9982C5.77767 20.006 5.53029 19.9168 5.33972 19.7488C5.14916 19.5807 5.02969 19.3464 5.0056 19.0935C4.98151 18.8406 5.05459 18.588 5.21 18.387L5.293 18.293L6.584 17H3C2.23479 17 1.49849 16.7077 0.941739 16.1827C0.384993 15.6578 0.0498925 14.9399 0.00500011 14.176L0 14V11C0 10.7348 0.105357 10.4804 0.292893 10.2929C0.48043 10.1054 0.734784 10 1 10Z" fill="var(--------, #2961C2)"/>
+        <path d="M14.9979 0.937349C14.9826 0.694323 14.8792 0.465223 14.707 0.293031C14.5195 0.105559 14.2651 0.000244141 14 0.000244141C13.7348 0.000244141 13.4805 0.105559 13.293 0.293031L10.334 3.25103C10.2286 3.34636 10.147 3.4577 10.089 3.58503L10.049 3.68903L10.013 3.83503C9.98511 3.99219 9.99605 4.15378 10.0448 4.30575C10.0936 4.45772 10.1788 4.59547 10.293 4.70703L13.293 7.70703L13.387 7.79003C13.588 7.94544 13.8406 8.01852 14.0935 7.99443C14.3464 7.97034 14.5807 7.85087 14.7487 7.66031C14.9168 7.46974 15.006 7.22236 14.9982 6.96841C14.9905 6.71446 14.8863 6.47299 14.707 6.29303L13.415 5.00003H17L17.117 5.00703C17.3602 5.03569 17.5845 5.15262 17.7473 5.33566C17.91 5.51869 17.9999 5.7551 18 6.00003V9.00003L18.007 9.11703C18.0371 9.37013 18.1627 9.60218 18.3581 9.76577C18.5536 9.92936 18.8041 10.0121 19.0586 9.9972C19.313 9.98227 19.5522 9.87074 19.7271 9.6854C19.9021 9.50006 19.9997 9.25491 20 9.00003V6.00003L19.995 5.82403C19.9501 5.06014 19.615 4.34227 19.0582 3.81731C18.5015 3.29236 17.7652 2.99999 17 3.00003H13.414L14.707 1.70703L14.79 1.61303C14.9392 1.42063 15.0131 1.18038 14.9979 0.937349Z" fill="var(----, #3680FF)"/>
+        <path d="M6.20144 0.660293C5.54802 0.229577 4.78261 0 4 0C2.97376 0 1.98677 0.394435 1.24319 1.10172C0.499605 1.80901 0.0563122 2.77504 0.00500011 3.8L0 4L0.00500011 4.2C0.0441305 4.98163 0.311689 5.73461 0.774538 6.36567C1.23739 6.99674 1.87519 7.47817 2.60895 7.75033C3.34271 8.02249 4.14018 8.07343 4.90261 7.89683C5.66503 7.72023 6.3589 7.32386 6.89827 6.75681C7.43765 6.18976 7.79883 5.47694 7.93708 4.70664C8.07534 3.93634 7.98459 3.14241 7.67609 2.42318C7.36758 1.70394 6.85486 1.09101 6.20144 0.660293Z" fill="var(----------, #FFC107)"/>
+        <path d="M18.2014 12.6603C17.548 12.2296 16.7826 12 16 12C14.9738 12 13.9868 12.3944 13.2432 13.1017C12.4996 13.809 12.0563 14.775 12.005 15.8L12 16L12.005 16.2C12.0441 16.9816 12.3117 17.7346 12.7745 18.3657C13.2374 18.9967 13.8752 19.4782 14.6089 19.7503C15.3427 20.0225 16.1402 20.0734 16.9026 19.8968C17.665 19.7202 18.3589 19.3239 18.8983 18.7568C19.4376 18.1898 19.7988 17.4769 19.9371 16.7066C20.0753 15.9363 19.9846 15.1424 19.6761 14.4232C19.3676 13.7039 18.8549 13.091 18.2014 12.6603Z" fill="var(----------, #DC3545)"/>
+        </svg>
+        转换控制</h3>
+
+      <div class="custom-progress">
+        <div class="custom-progress-bar" style="width: 0%;"></div>
+        <div class="custom-progress-text">0%</div>
+      </div>
+      <!-- <progress id="progressBar" value="0" max="100"></progress> -->
+      <div class="btn-group">
+        <button id="convertBtn" title="开始转换文件">
+          <svg width="22" height="22" viewBox="0 0 22 22" fill="none" style="vertical-align: middle ">
+          <path d="M4.96057 10.5373C10.5227 0.171043 17.4479 0.0510425 20.2163 1.28683C21.4521 4.05525 21.3321 10.9805 10.9658 16.5426C10.8585 15.9247 10.2606 14.3058 8.72899 12.7742C7.19741 11.2426 5.57847 10.6447 4.96057 10.5373Z" stroke="var(---------, #F0F0F0)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M12.3289 16.3321C14.4795 17.3142 14.7079 19.0763 15.0068 20.7531C15.0068 20.7531 19.51 17.6457 16.63 13.3847M5.17105 9.17417C4.18894 7.02365 2.42684 6.79418 0.75 6.49628C0.75 6.49628 3.85736 1.99313 8.11841 4.87313M4.12789 13.3847C3.46263 14.05 2.3321 15.9784 3.13 18.3731C5.52473 19.171 7.45315 18.0405 8.11841 17.3752" stroke="var(---------, #F0F0F0)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M16.6394 6.80889C16.6394 6.55357 16.5891 6.30076 16.4914 6.06488C16.3937 5.82899 16.2505 5.61467 16.0699 5.43413C15.8894 5.25359 15.6751 5.11038 15.4392 5.01268C15.2033 4.91497 14.9505 4.86469 14.6952 4.86469C14.4399 4.86469 14.187 4.91497 13.9512 5.01268C13.7153 5.11038 13.501 5.25359 13.3204 5.43413C13.1399 5.61467 12.9967 5.82899 12.899 6.06488C12.8013 6.30076 12.751 6.55357 12.751 6.80889C12.751 7.32453 12.9558 7.81904 13.3204 8.18365C13.685 8.54826 14.1795 8.7531 14.6952 8.7531C15.2108 8.7531 15.7053 8.54826 16.0699 8.18365C16.4346 7.81904 16.6394 7.32453 16.6394 6.80889Z" stroke="var(---------, #F0F0F0)" stroke-width="1.5"/>
+          </svg>
+          开始转换
+        </button>
+        <button id="openOutputFolderBtn" disabled title="打开输出文件夹">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" style="vertical-align: middle ">
+          <path d="M7.29102 11.3331H18.1211C18.4502 11.3331 18.6628 11.3335 18.8203 11.3478C18.9711 11.3615 19.0094 11.3845 19.0146 11.3878L19.0156 11.3888C19.0687 11.423 19.1114 11.4724 19.1377 11.5314L19.1582 11.5929C19.1594 11.5984 19.1661 11.6423 19.1279 11.7863C19.0873 11.9396 19.0157 12.1405 18.9033 12.4493H18.9023L16.8623 18.0724C16.618 18.7441 16.5342 18.9524 16.4072 19.0988C16.3135 19.2068 16.2007 19.2964 16.0752 19.3634L15.9453 19.423C15.7647 19.4923 15.5412 19.5001 14.8252 19.5001H3.00977L2.79297 19.4982C3.16488 19.3168 3.45262 18.9857 3.59668 18.6056L3.59863 18.5988L5.88086 12.3185C6.06836 11.8031 6.12285 11.678 6.19629 11.5948L6.19824 11.5919C6.27901 11.4992 6.38227 11.4277 6.49609 11.3839V11.3829C6.60508 11.341 6.74428 11.3331 7.29102 11.3331Z" fill="#F0F0F0" stroke="#F0F0F0"/>
+          <mask id="path-2-inside-1_73_10" fill="white">
+          <path fill-rule="evenodd" clip-rule="evenodd" d="M11.3033 0.0116623C11.8947 0.0116623 12.2613 0.00916323 12.6028 0.0924654C12.9002 0.163272 13.1851 0.281561 13.4441 0.441501C13.7482 0.628098 14.0039 0.887168 14.4188 1.30784L17.0761 3.96518C17.4943 4.38336 17.7534 4.6391 17.9425 4.93982C18.1024 5.20055 18.2199 5.48545 18.2915 5.78117C18.3748 6.1277 18.3723 6.49173 18.3723 7.08068V9.17156H17.5393V7.08068C17.5393 6.92352 17.5387 6.78801 17.5376 6.67417H13.789C13.2367 6.67417 12.707 6.45476 12.3164 6.0642C11.9259 5.67365 11.7065 5.14394 11.7065 4.59161V0.843018L11.3 0.841352H7.79293C7.08653 0.841352 6.58505 0.841352 6.1852 0.873839C5.79368 0.905494 5.54711 0.967138 5.35218 1.06793C4.96143 1.2674 4.64365 1.58518 4.44419 1.97593C4.34256 2.17502 4.28175 2.42243 4.25009 2.80895C4.21677 3.20463 4.21677 3.70861 4.21677 4.41668V10.6727C4.03351 11.0117 3.92271 11.3524 3.83941 11.5807L3.38458 12.8302V4.41668C3.38458 3.72361 3.38458 3.17548 3.4204 2.74231C3.45622 2.29997 3.53119 1.93011 3.7028 1.59274C3.98375 1.04495 4.42954 0.599165 4.97732 0.318214C5.31303 0.147445 5.68289 0.0724729 6.12689 0.0349869C6.56422 3.10325e-09 7.10985 0 7.80126 0H11.3083L11.3033 0.0116623ZM12.5445 4.59328C12.5445 4.75737 12.5768 4.91985 12.6396 5.07145C12.7024 5.22305 12.7944 5.3608 12.9105 5.47683C13.0265 5.59286 13.1642 5.6849 13.3158 5.7477C13.4674 5.81049 13.6299 5.84281 13.794 5.84281H17.451C17.4001 5.67834 17.329 5.5208 17.2394 5.37382C17.1169 5.17306 16.9428 4.99563 16.4963 4.54996L13.839 1.89262C13.3925 1.44612 13.2151 1.27286 13.0151 1.14957C12.8679 1.05986 12.7101 0.98879 12.5453 0.937982V4.59495L12.5445 4.59328Z"/>
+          </mask>
+          <path fill-rule="evenodd" clip-rule="evenodd" d="M11.3033 0.0116623C11.8947 0.0116623 12.2613 0.00916323 12.6028 0.0924654C12.9002 0.163272 13.1851 0.281561 13.4441 0.441501C13.7482 0.628098 14.0039 0.887168 14.4188 1.30784L17.0761 3.96518C17.4943 4.38336 17.7534 4.6391 17.9425 4.93982C18.1024 5.20055 18.2199 5.48545 18.2915 5.78117C18.3748 6.1277 18.3723 6.49173 18.3723 7.08068V9.17156H17.5393V7.08068C17.5393 6.92352 17.5387 6.78801 17.5376 6.67417H13.789C13.2367 6.67417 12.707 6.45476 12.3164 6.0642C11.9259 5.67365 11.7065 5.14394 11.7065 4.59161V0.843018L11.3 0.841352H7.79293C7.08653 0.841352 6.58505 0.841352 6.1852 0.873839C5.79368 0.905494 5.54711 0.967138 5.35218 1.06793C4.96143 1.2674 4.64365 1.58518 4.44419 1.97593C4.34256 2.17502 4.28175 2.42243 4.25009 2.80895C4.21677 3.20463 4.21677 3.70861 4.21677 4.41668V10.6727C4.03351 11.0117 3.92271 11.3524 3.83941 11.5807L3.38458 12.8302V4.41668C3.38458 3.72361 3.38458 3.17548 3.4204 2.74231C3.45622 2.29997 3.53119 1.93011 3.7028 1.59274C3.98375 1.04495 4.42954 0.599165 4.97732 0.318214C5.31303 0.147445 5.68289 0.0724729 6.12689 0.0349869C6.56422 3.10325e-09 7.10985 0 7.80126 0H11.3083L11.3033 0.0116623ZM12.5445 4.59328C12.5445 4.75737 12.5768 4.91985 12.6396 5.07145C12.7024 5.22305 12.7944 5.3608 12.9105 5.47683C13.0265 5.59286 13.1642 5.6849 13.3158 5.7477C13.4674 5.81049 13.6299 5.84281 13.794 5.84281H17.451C17.4001 5.67834 17.329 5.5208 17.2394 5.37382C17.1169 5.17306 16.9428 4.99563 16.4963 4.54996L13.839 1.89262C13.3925 1.44612 13.2151 1.27286 13.0151 1.14957C12.8679 1.05986 12.7101 0.98879 12.5453 0.937982V4.59495L12.5445 4.59328Z" fill="#F0F0F0"/>
+          <path d="M11.3033 0.0116623L10.3841 -0.38218L9.78688 1.01166H11.3033V0.0116623ZM12.6028 0.0924654L12.3658 1.064L12.3712 1.06527L12.6028 0.0924654ZM13.4441 0.441501L12.9188 1.29241L12.9211 1.2938L13.4441 0.441501ZM14.4188 1.30784L13.7067 2.01002L13.7117 2.01495L14.4188 1.30784ZM17.0761 3.96518L17.7832 3.25807V3.25807L17.0761 3.96518ZM17.9425 4.93982L18.7949 4.4169L18.789 4.4075L17.9425 4.93982ZM18.2915 5.78117L19.2638 5.54744L19.2634 5.54572L18.2915 5.78117ZM18.3723 9.17156V10.1716H19.3723V9.17156H18.3723ZM17.5393 9.17156H16.5393V10.1716H17.5393V9.17156ZM17.5376 6.67417L18.5376 6.66441L18.5279 5.67417H17.5376V6.67417ZM13.789 6.67417V5.67417V6.67417ZM11.7065 0.843018H12.7065V-0.152892L11.7106 -0.156974L11.7065 0.843018ZM11.3 0.841352L11.3041 -0.158649H11.3V0.841352ZM6.1852 0.873839L6.26579 1.87059L6.26618 1.87055L6.1852 0.873839ZM5.35218 1.06793L5.80685 1.95861L5.8115 1.9562L5.35218 1.06793ZM4.44419 1.97593L3.55352 1.52126L3.55352 1.52128L4.44419 1.97593ZM4.25009 2.80895L5.24657 2.89286L5.24676 2.89057L4.25009 2.80895ZM4.21677 10.6727L5.09648 11.1482L5.21677 10.9256V10.6727H4.21677ZM3.83941 11.5807L2.90002 11.2378L2.89973 11.2386L3.83941 11.5807ZM3.38458 12.8302H2.38458L4.32427 13.1722L3.38458 12.8302ZM3.4204 2.74231L4.417 2.82472L4.41714 2.82302L3.4204 2.74231ZM3.7028 1.59274L2.813 1.13637L2.81147 1.13937L3.7028 1.59274ZM4.97732 0.318214L4.52392 -0.5731L4.52095 -0.571579L4.97732 0.318214ZM6.12689 0.0349869L6.04714 -0.961838L6.04276 -0.961468L6.12689 0.0349869ZM11.3083 0L12.2275 0.393842L12.8247 -1H11.3083V0ZM12.5445 4.59328L13.439 4.14624L11.5445 4.59328H12.5445ZM17.451 5.84281V6.84281H18.807L18.4063 5.54732L17.451 5.84281ZM17.2394 5.37382L18.0931 4.85313L18.0931 4.85309L17.2394 5.37382ZM16.4963 4.54996L15.7892 5.25707L15.7899 5.25773L16.4963 4.54996ZM13.839 1.89262L14.5461 1.18552V1.18552L13.839 1.89262ZM13.0151 1.14957L13.54 0.298386L13.5354 0.295573L13.0151 1.14957ZM12.5453 0.937982L12.84 -0.0176143L11.5453 -0.416857V0.937982H12.5453ZM12.5453 4.59495L11.6508 5.041" fill="#F0F0F0"/>
+          </svg>
+          打开输出文件夹
+        </button>
+        <button id="stopCurrentBtn" disabled title="中止当前转换任务&#10;（会跳过当前处理文件，进行列表中下一个文件的处理）">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" style="vertical-align: middle ">
+          <path fill-rule="evenodd" clip-rule="evenodd" d="M10 20C12.6522 20 15.1957 18.9464 17.0711 17.0711C18.9464 15.1957 20 12.6522 20 10C20 7.34784 18.9464 4.8043 17.0711 2.92893C15.1957 1.05357 12.6522 0 10 0C7.34784 0 4.8043 1.05357 2.92893 2.92893C1.05357 4.8043 0 7.34784 0 10C0 12.6522 1.05357 15.1957 2.92893 17.0711C4.8043 18.9464 7.34784 20 10 20ZM7.5 6.25C7.16848 6.25 6.85054 6.3817 6.61612 6.61612C6.3817 6.85054 6.25 7.16848 6.25 7.5V12.5C6.25 12.8315 6.3817 13.1495 6.61612 13.3839C6.85054 13.6183 7.16848 13.75 7.5 13.75H12.5C12.8315 13.75 13.1495 13.6183 13.3839 13.3839C13.6183 13.1495 13.75 12.8315 13.75 12.5V7.5C13.75 7.16848 13.6183 6.85054 13.3839 6.61612C13.1495 6.3817 12.8315 6.25 12.5 6.25H7.5Z" fill="var(---------, #F0F0F0)"/>
+          </svg>
+          中止当前任务
+        </button>
+        <button id="stopAllBtn" disabled title="中止所有转换任务&#10;(停止所有任务的处理)">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" style="vertical-align: middle ">
+          <path fill-rule="evenodd" clip-rule="evenodd" d="M10 20C12.6522 20 15.1957 18.9464 17.0711 17.0711C18.9464 15.1957 20 12.6522 20 10C20 7.34784 18.9464 4.8043 17.0711 2.92893C15.1957 1.05357 12.6522 0 10 0C7.34784 0 4.8043 1.05357 2.92893 2.92893C1.05357 4.8043 0 7.34784 0 10C0 12.6522 1.05357 15.1957 2.92893 17.0711C4.8043 18.9464 7.34784 20 10 20ZM7.5 6.25C7.16848 6.25 6.85054 6.3817 6.61612 6.61612C6.3817 6.85054 6.25 7.16848 6.25 7.5V12.5C6.25 12.8315 6.3817 13.1495 6.61612 13.3839C6.85054 13.6183 7.16848 13.75 7.5 13.75H12.5C12.8315 13.75 13.1495 13.6183 13.3839 13.3839C13.6183 13.1495 13.75 12.8315 13.75 12.5V7.5C13.75 7.16848 13.6183 6.85054 13.3839 6.61612C13.1495 6.3817 12.8315 6.25 12.5 6.25H7.5Z" fill="var(---------, #F0F0F0)"/>
+          </svg>
+          中止所有任务
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script src="renderer.js"></script>
+</body>
+</html>

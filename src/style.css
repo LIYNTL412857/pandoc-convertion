@@ -1,0 +1,564 @@
+/* 重置样式 */
+* { /* 选择所有元素 */
+  margin: 0; /* 清除默认外边距 */
+  padding: 0; /* 清除默认内边距 */
+  box-sizing: border-box; /* 使用border-box盒模型 */
+  font-family: "Microsoft YaHei", "Arial", sans-serif; /* 设置默认字体 */
+}
+
+/* 主题变量定义 */
+:root {
+  /* 亮色主题变量 */
+  --bg-primary: #f5f5f5;
+  --bg-secondary: #ffffff;
+  --bg-tertiary: #f9f9f9;
+  --bg-quaternary: #f0f0f0;
+  --text-primary: #333333;
+  --text-secondary: #666666;
+  --text-light: #f0f0f0;
+  --border-color: #dddddd;
+  --shadow-color: rgba(0,0,0,0.1);
+  --shadow-color-dark: rgba(0,0,0,0.25);
+  --accent-color: #3680ff;
+  --accent-color-dark: #2961C2;
+  --warning-color: #FFC107;
+  --error-color: #DC3545;
+  --success-color: #28A745;
+}
+
+/* 暗色主题变量 */
+body.dark-theme {
+  --bg-primary: #1a1a1a;
+  --bg-secondary: #2d2d2d;
+  --bg-tertiary: #3d3d3d;
+  --bg-quaternary: #4d4d4d;
+  --text-primary: #e0e0e0;
+  --text-secondary: #b0b0b0;
+  --text-light: #f0f0f0;
+  --border-color: #555555;
+  --shadow-color: rgba(0,0,0,0.3);
+  --shadow-color-dark: rgba(0,0,0,0.5);
+  --accent-color: #4a90e2;
+  --accent-color-dark: #3a7bc8;
+  --warning-color: #FFD700;
+  --error-color: #E74C3C;
+  --success-color: #27AE60;
+}
+
+/* 滚动条样式 - 暗色主题 */
+body.dark-theme ::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+body.dark-theme ::-webkit-scrollbar-track {
+  background: var(--bg-tertiary);
+  border-radius: 4px;
+}
+
+body.dark-theme ::-webkit-scrollbar-thumb {
+  background: var(--accent-color);
+  border-radius: 4px;
+  transition: background-color 0.3s ease;
+}
+
+body.dark-theme ::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-color-dark);
+}
+
+/* 全局样式 */
+body { /* 页面主体 */
+  background-color: var(--bg-primary); /* 设置背景颜色 */
+  padding: 20px; /* 设置内边距 */
+  font-size: 14px; /* 设置字体大小 */
+  min-height: 100vh; /* 设置最小高度为视口高度，确保页面至少占满整个屏幕 */
+  color: var(--text-primary); /* 设置文本颜色 */
+  transition: background-color 0.3s ease, color 0.3s ease; /* 添加过渡效果 */
+}
+
+/* 布局相关样式 */
+/* 全局最外层统一约束宽度、居中、内边距 */
+.main-wrap { /* 主容器 */
+  width: 96%; /* 设置宽度为96% */
+  max-width: 1300px; /* 设置最大宽度为1300px */
+  min-width: 620px; /* 设置最小宽度为600px，适配小屏幕 */
+  margin: 0 auto; /* 水平居中 */
+  padding: 20px 0; /* 设置上下内边距 */
+  box-sizing: border-box; /* 使用border-box盒模型 */
+}
+
+.container { /* 容器 */
+  width: 100%; /* 设置宽度为100% */
+  margin: 0 auto; /* 水平居中 */
+  display: flex; /* 使用flex布局 */
+  flex-direction: column; /* 垂直排列子元素 */
+  gap: 16px; /* 设置子元素间距 */
+}
+
+/* 面板样式 */
+.panel { /* 面板 */
+  display: flex; /* 使用flex布局 */
+  background: var(--bg-secondary); /* 设置背景颜色 */
+  border-radius: 8px; /* 设置圆角 */
+  box-sizing: border-box; /* 使用border-box盒模型 */
+  padding: 16px; /* 设置内边距 */
+  box-shadow: 0 2px 8px var(--shadow-color); /* 添加阴影 */
+  width: 100%; /* 设置宽度为100% */
+  margin: 0; /* 清除外边距 */
+  flex-direction: column; /* 垂直排列子元素 */
+  justify-content:space-between; /* 子元素两端对齐 */
+  transition: background-color 0.3s ease, box-shadow 0.3s ease; /* 添加过渡效果 */
+}
+
+.panel h3 { /* 面板标题 */
+  margin-bottom: 16px; /* 设置底部外边距 */
+  font-size: 16px; /* 设置字体大小 */
+  color: var(--text-primary); /* 设置字体颜色 */
+  font-weight: 700; /* 设置字体粗细 */
+  word-wrap: break-word; /* 允许长单词换行 */
+  transition: color 0.3s ease; /* 添加过渡效果 */
+}
+
+/* 三栏横向布局容器 */
+.row-container { /* 行容器 */
+  display: flex; /* 使用flex布局 */
+  gap: 16px; /* 模块之间间距 */
+  flex-direction: row; /* 水平排列子元素 */
+  width: 100%; /* 设置宽度为100% */
+  box-sizing: border-box; /* 使用border-box盒模型 */
+  padding: 0; /* 清除内边距 */
+  margin-bottom: 16px; /* 设置底部外边距 */
+  margin-left: 0; /* 清除左侧外边距 */
+  margin-right: 0; /* 清除右侧外边距 */
+}
+
+/* 三个面板均分宽度 */
+.row-container .panel { /* 行容器中的面板 */
+  flex: 1; /* 自动三等分 */
+  min-width: 0; /* 防止内容撑开不缩窄 */
+  margin: 0 !important; /* 去除默认margin，使用gap控制间距 */
+  width: 100% !important; /* 设置宽度为100% */
+  box-sizing: border-box; /* 使用border-box盒模型 */
+}
+
+.row-container .mid { /* 行容器中的中间面板 */
+  flex: 0 0; /* 自动三等分 */
+  min-width: 400px; /* 防止内容撑开不缩窄 */
+  margin: 0 !important; /* 去除默认margin，使用gap控制间距 */
+  width: 100% !important; /* 设置宽度为100% */
+  box-sizing: border-box; /* 使用border-box盒模型 */
+  background-color: transparent !important; /* 去除背景颜色 */
+  box-shadow: none; /* 去除阴影 */
+}
+
+/* 适配小屏幕：窗口变窄自动改成竖排 */
+@media (max-width: 1024px) { /* 媒体查询，屏幕宽度小于等于1024px时 */
+  .row-container { /* 行容器 */
+    flex-direction: column; /* 垂直排列子元素 */
+    gap: 16px; /* 竖排时内部面板上下间距，左右不留空 */
+  }
+  
+  .row-container .panel { /* 行容器中的面板 */
+    width: 100%; /* 设置宽度为100% */
+  }
+}
+
+/* 按钮组样式 */
+.btn-group { /* 按钮组 */
+  display: flex; /* 使用flex布局 */
+  gap: 10px; /* 设置子元素间距 */
+  margin-bottom: 12px; /* 设置底部外边距 */
+  justify-content: space-between; /* 子元素两端对齐 */
+}
+
+.btn-group.right { /* 右对齐的按钮组 */
+  justify-content: flex-end; /* 子元素右对齐 */
+}
+
+/* 基础按钮样式 */
+button { /* 按钮 */
+  padding: 8px 16px; /* 设置内边距 */
+  border: none; /* 去除边框 */
+  border-radius: 5px; /* 设置圆角 */
+  cursor: pointer; /* 设置鼠标指针为手型 */
+  font-size: 14px; /* 设置字体大小 */
+  transition: opacity 0.2s, background-color 0.3s ease, box-shadow 0.3s ease; /* 设置过渡效果 */
+  background-color: var(--accent-color); /* 设置背景颜色 */
+  position: relative !important; /* 设置相对定位 */
+  overflow: hidden !important; /* 隐藏溢出内容 */
+  box-shadow: 0 2px 8px var(--shadow-color) !important; /* 添加阴影 */
+  z-index: 0 !important; /* 设置层级 */
+  color: var(--text-light); /* 设置字体颜色 */
+}
+
+button:hover { /* 按钮 hover 状态 */
+  opacity: 0.9; /* 设置透明度为0.9 */
+}
+
+/* 按钮渐变效果 */
+/* 底层主渐变（不是简单两头，而是多段精细渐变） */
+button::before { /* 按钮伪元素 */
+  content: ''; /* 伪元素内容为空 */
+  position: absolute; /* 设置绝对定位 */
+  left: 0; /* 左对齐 */
+  top: 0; /* 上对齐 */
+  width: 100%; /* 设置宽度为100% */
+  height: 100%; /* 设置高度为100% */
+  background: linear-gradient( /* 设置线性渐变背景 */
+    180deg, /* 渐变方向 */
+    rgba(255,255,255,0.35) 0%, /* 顶部白色透明度0.35 */
+    rgba(255,255,255,0.15) 40%, /* 40%位置白色透明度0.15 */
+    rgba(255,255,255,0.05) 60%, /* 60%位置白色透明度0.05 */
+    rgba(0,0,0,0.1) 100% /* 底部黑色透明度0.1 */
+  );
+  mix-blend-mode: overlay; /* 设置混合模式 */
+  pointer-events: none; /* 不响应鼠标事件 */
+  z-index: 3; /* 设置层级 */
+  border-radius: inherit; /* 继承父元素圆角 */
+}
+
+/* 第二层：柔光遮罩（高级发光效果） */
+button::after { /* 按钮伪元素 */
+  content: ''; /* 伪元素内容为空 */
+  position: absolute; /* 设置绝对定位 */
+  left: 0; /* 左对齐 */
+  top: 0; /* 上对齐 */
+  width: 100%; /* 设置宽度为100% */
+  height: 100%; /* 设置高度为100% */
+  background: linear-gradient( /* 设置线性渐变背景 */
+    180deg, /* 渐变方向 */
+    rgba(255,255,255,0.25), /* 顶部白色透明度0.25 */
+    transparent 55%, /* 55%位置透明 */
+    rgba(0,0,0,0.05) 100% /* 底部黑色透明度0.05 */
+  );
+  mix-blend-mode: plus-lighter; /* 设置混合模式 */
+  pointer-events: none; /* 不响应鼠标事件 */
+  z-index: 2; /* 设置层级 */
+  border-radius: inherit; /* 继承父元素圆角 */
+}
+
+/* 文件选择系列按钮样式 */
+.file-btn,
+#selectFilesBtn,
+#selectOutputBtn { /* 文件选择按钮 */
+  display: box; /* 使用box布局 */
+  justify-content: center; /* 垂直居中对齐 */
+  background: var(--accent-color); /* 设置背景颜色 */
+  padding: 8px; /* 设置内边距 */
+  width: 90px; /* 设置宽度 */
+  height: 37px; /* 设置高度 */
+  border-radius: 24px; /* 设置圆角 */
+  box-shadow: 0px 0px 4px 0px var(--shadow-color-dark); /* 添加阴影 */
+  gap: 9px; /* 设置子元素间距 */
+  color: var(--text-light); /* 设置字体颜色 */
+  font-family: "Microsoft YaHei UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", SimHei, Arial, Helvetica, sans-serif; /* 设置字体 */
+  font-size: 14px; /* 设置字体大小 */
+  line-height: 15px; /* 设置行高 */
+  letter-spacing: 0; /* 设置字间距 */
+  transition: background-color 0.3s ease, box-shadow 0.3s ease; /* 添加过渡效果 */
+}
+
+.file-btn.themeToggleBtn {
+  width: 110px !important;
+  color: var(--text-light);
+}
+
+
+/* 文件选择按钮中的SVG图标样式 */
+.file-btn svg,
+#selectFilesBtn svg,
+#selectOutputBtn svg { /* 文件选择按钮中的SVG图标 */
+  flex-shrink: 0; /* 不允许缩小 */
+  width: 20px; /* 设置宽度 */
+  height: 20px; /* 设置高度 */
+}
+
+/* 转换按钮样式 */
+#convertBtn { /* 转换按钮 */
+  background: var(--accent-color); /* 设置背景颜色 */
+  color: var(--text-light) !important; /* 设置字体颜色 */
+  height: 37px; /* 设置高度 */
+  border-radius: 24px; /* 设置圆角 */
+  box-shadow: 0px 0px 4px 0px var(--shadow-color-dark); /* 添加阴影 */
+  justify-content: normal; /* 内容正常对齐 */
+  transition: background-color 0.3s ease, box-shadow 0.3s ease; /* 添加过渡效果 */
+}
+
+/* 停止按钮样式 */
+#stopCurrentBtn, #stopAllBtn { /* 停止按钮 */
+  background-color: var(--error-color); /* 设置红色背景 */
+  background-image: linear-gradient(180deg, rgba(255,255,255,0.35), transparent, rgba(0,0,0,0.1)); /* 设置渐变叠加 */
+  color: var(--text-light) !important; /* 设置字体颜色 */
+  height: 37px; /* 设置高度 */
+  border-radius: 24px; /* 设置圆角 */
+  box-shadow: 0px 0px 4px 0px var(--shadow-color-dark); /* 添加阴影 */
+  transition: background-color 0.3s ease, box-shadow 0.3s ease; /* 添加过渡效果 */
+}
+
+/* 清除按钮样式 */
+#clearFilesBtn, #clearLogBtn { /* 清除按钮 */
+  height: 37px; /* 设置高度 */
+  padding: 6px 11px; /* 设置内边距 */
+  background: var(--accent-color-dark); /* 设置背景颜色 */
+  box-shadow: 0px 2px 4px var(--shadow-color-dark) inset; /* 添加内阴影 */
+  border-radius: 47px; /* 设置圆角 */
+  justify-content: center; /* 内容居中对齐 */
+  align-items: center; /* 垂直居中对齐 */
+  gap: 9px; /* 设置子元素间距 */
+  display: inline-flex; /* 使用inline-flex布局 */
+  color: var(--text-light); /* 设置字体颜色 */
+  transition: background-color 0.3s ease, box-shadow 0.3s ease; /* 添加过渡效果 */
+}
+
+/* 打开输出文件夹按钮样式 */
+#openOutputFolderBtn { /* 打开输出文件夹按钮 */
+  background: var(--accent-color); /* 设置背景颜色 */
+  color: var(--text-light) !important; /* 设置字体颜色 */
+  height: 37px; /* 设置高度 */
+  border-radius: 24px; /* 设置圆角 */
+  box-shadow: 0px 0px 4px 0px var(--shadow-color-dark); /* 添加阴影 */
+  justify-content: normal; /* 内容正常对齐 */
+  transition: background-color 0.3s ease, box-shadow 0.3s ease; /* 添加过渡效果 */
+}
+
+/* 按钮禁用状态 */
+/* 按钮禁用状态：关闭所有渐变、柔光、高光、遮罩 */
+button:disabled { /* 禁用状态的按钮 */
+  color: #ffffff !important; /* 设置字体颜色 */
+  cursor: not-allowed !important; /* 设置鼠标指针为禁用状态 */
+  opacity: 0.85 !important; /* 设置透明度 */
+  box-shadow: none !important; /* 清除阴影 */
+  border: none !important; /* 清除边框 */
+}
+
+/* 禁用状态彻底关闭 ::before / ::after 渐变遮罩 */
+button:disabled::before,
+button:disabled::after { /* 禁用状态的按钮伪元素 */
+  display: none !important; /* 隐藏伪元素 */
+}
+
+/* 禁用状态清除所有按钮的渐变背景 */
+button:disabled#selectFilesBtn,
+button:disabled#selectOutputBtn,
+button:disabled#convertBtn,
+button:disabled#stopCurrentBtn,
+button:disabled#stopAllBtn,
+button:disabled#clearFilesBtn,
+button:disabled#clearLogBtn { /* 禁用状态的具体按钮 */
+  background-image: none !important; /* 清除背景图片 */
+  background-blend-mode: normal !important; /* 设置背景混合模式 */
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.25) inset; /* 添加内阴影 */
+  border-radius: 47px; /* 设置圆角 */
+}
+
+/* 表单相关样式 */
+.form-grid { /* 表单网格 */
+  display: grid; /* 使用grid布局 */
+  grid-template-columns: 1fr 2fr 1fr; /* 三列，第一列占3份，第二列占2份，第三列占3份 */
+  gap: 12px 10px; /* 设置网格间距 */
+  align-items: center; /* 垂直居中对齐 */
+}
+
+.form-grid .two-row { /* 跨两列的标签 */
+  grid-column: 2 / 3; /* 占据第一列到第三列 */
+  display: grid; /* 使用flex布局 */
+}
+
+.form-grid .three-row { /* 跨两列的标签 */
+  grid-column: 2 / 4; /* 占据第一列到第三列 */
+}
+
+.form-grid .full-row { /* 占满整行的元素 */
+  grid-column: 1 / -1; /* 跨所有列，独占整行 */
+  width: 100%; /* 占满整行宽度 */
+  display: flex; /* 使用flex布局 */
+  justify-content: space-between; /* 子元素两端对齐 */
+}
+
+.form-grid .full-row.right { /* 占满整行的元素中的右对齐元素 */
+  display: flex; /* 使用flex布局 */
+  justify-content: flex-end; /* 右对齐 */
+  align-items: center; /* 垂直居中对齐 */
+}
+
+select { /* 下拉选择框 */
+  padding: 10px; /* 设置内边距 */
+  padding-right: 40px !important; /* 使用!important确保优先级 */
+  border-radius: 25px; /* 设置圆角 */
+  border: 1px solid var(--border-color); /* 设置边框 */
+  font-size: 14px; /* 设置字体大小 */
+  width: 100%; /* 设置宽度为100% */
+  background-color: var(--bg-secondary); /* 设置背景颜色 */
+  color: var(--text-primary); /* 设置文本颜色 */
+  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease; /* 添加过渡效果 */
+}
+
+/* 为select元素添加特定的过渡效果 */
+select#outputFormat {
+  /* 为箭头旋转提供明确的过渡 */
+  transition: transform 0.3s ease, background-color 0.3s ease, border-color 0.3s ease; /* 设置变换过渡效果 */
+}
+
+#outputFormat {
+  padding: 10px 16px; /* 设置内边距 */
+  box-sizing: border-box; /* 使用border-box盒模型 */
+  width: 100%; /* 确保宽度足够 */
+  text-align: left; /* 确保文本左对齐 */
+  appearance: none; /* 移除默认箭头样式 */
+  background-color: var(--bg-secondary); /* 设置背景颜色 */
+  background-image: url('data:image/svg+xml;charset=US-ASCII,<svg width="12" height="7" viewBox="0 0 12 7" fill="none" xmlns="http://www.w3.org/2000/svg"> <path fill-rule="evenodd" clip-rule="evenodd" d="M5.24284 6.65688L0.292843 1.70688C-0.0976224 1.31641 -0.0976235 0.683341 0.292842 0.292876C0.683307 -0.0975894 1.31638 -0.0975892 1.70684 0.292876L5.59629 4.18232C5.79155 4.37759 6.10813 4.37759 6.3034 4.18232L10.1928 0.292877C10.5833 -0.0975881 11.2164 -0.097589 11.6068 0.292876C11.9973 0.683342 11.9973 1.31641 11.6068 1.70688L6.65684 6.65688C6.46931 6.84435 6.21501 6.94966 5.94984 6.94966C5.68468 6.94966 5.43037 6.84435 5.24284 6.65688Z" fill="currentColor"/></svg>'); /* 设置背景图片为下拉箭头 */
+  background-repeat: no-repeat; /* 背景图片不重复 */
+  background-position: right 16px center; /* 背景图片位置 */
+  color: var(--text-primary); /* 设置文本颜色 */
+}
+
+#outputFormat.options-opened {
+  padding: 10px 16px; /* 设置内边距 */
+  box-sizing: border-box; /* 使用border-box盒模型 */
+  width: 100%; /* 确保宽度足够 */
+  text-align: left; /* 确保文本左对齐 */
+  appearance: none; /* 移除默认箭头样式 */
+  background-color: var(--bg-secondary); /* 设置背景颜色 */
+  background-image: url('data:image/svg+xml;charset=US-ASCII,<svg width="12" height="7" viewBox="0 0 12 7" fill="none" xmlns="http://www.w3.org/2000/svg"> <path fill-rule="evenodd" clip-rule="evenodd" d="M6.65685 0.29277L11.6068 5.24277C11.9973 5.63323 11.9973 6.2663 11.6068 6.65677C11.2164 7.04724 10.5833 7.04723 10.1928 6.65677L6.3034 2.76732C6.10814 2.57206 5.79155 2.57206 5.59629 2.76732L1.70685 6.65677C1.31638 7.04723 0.683311 7.04723 0.292846 6.65677C-0.0976194 6.2663 -0.0976193 5.63323 0.292846 5.24277L5.24285 0.29277C5.43037 0.105299 5.68468 -1.66166e-05 5.94985 -1.66134e-05C6.21501 -1.66102e-05 6.46932 0.105299 6.65685 0.29277Z" fill="currentColor"/></svg>'); /* 设置背景图片为上拉箭头 */
+  background-repeat: no-repeat; /* 背景图片不重复 */
+  background-position: right 16px center; /* 背景图片位置 */
+  color: var(--text-primary); /* 设置文本颜色 */
+}
+
+.output-path { /* 输出路径显示 */
+  color: var(--text-secondary); /* 设置字体颜色 */
+  font-size: 13px; /* 设置字体大小 */
+  border: 1px solid var(--border-color); /* 设置边框 */
+  padding: 8px; /* 设置内边距 */
+  border-radius: 25px; /* 设置圆角 */
+  white-space: nowrap; /* 不换行 */
+  overflow: hidden; /* 隐藏溢出内容 */
+  text-overflow: ellipsis; /* 溢出部分显示省略号 */
+  background-color: var(--bg-tertiary); /* 设置背景颜色 */
+  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease; /* 添加过渡效果 */
+}
+
+.tip { /* 提示文本 */
+  color: var(--text-secondary); /* 设置字体颜色 */
+  font-size: 12px; /* 设置字体大小 */
+  margin-top: 8px; /* 设置顶部外边距 */
+  transition: color 0.3s ease; /* 添加过渡效果 */
+}
+
+/* 列表和容器样式 */
+.file-list { /* 文件列表 */
+  list-style: none; /* 清除列表样式 */
+  border-radius: 6px; /* 设置圆角 */
+  padding: 8px; /* 设置内边距 */
+  height: 312px; /* 保持您原有的固定高度 */
+  max-height: 312px; /* 设置最大高度 */
+  overflow-x: hidden; /* 水平方向溢出时显示滚动条 */
+  overflow-y: auto; /* 垂直方向溢出时显示滚动条 */
+  background-color: var(--bg-tertiary); /* 设置背景颜色 */
+  box-shadow: 0px 0px 4px var(--shadow-color-dark); /* 添加阴影 */
+  transition: background-color 0.3s ease, box-shadow 0.3s ease; /* 添加过渡效果 */
+}
+
+.file-list li { /* 文件列表项 */
+  padding: 4px 8px; /* 设置内边距 */
+  border-bottom: 1px solid var(--border-color); /* 设置底部边框 */
+  transition: border-bottom-color 0.3s ease; /* 添加过渡效果 */
+}
+
+.file-list li:nth-child(even) { /* 偶数行文件列表项 */
+  background-color: var(--bg-quaternary); /* 设置背景颜色 */
+  transition: background-color 0.3s ease; /* 添加过渡效果 */
+}
+
+.file-list li:last-child { /* 文件列表最后一项 */
+  border-bottom: none; /* 清除底部边框 */
+}
+
+.log-container div { /* 日志消息项 */
+  padding: 2px 0; /* 设置上下内边距 */
+  transition: background-color 0.3s ease; /* 添加过渡效果 */
+}
+
+.log-container div:nth-child(even) { /* 偶数行日志消息 */
+  background-color: var(--bg-quaternary); /* 设置背景颜色 */
+  padding: 2px 4px; /* 设置内边距 */
+  margin: 0 -8px; /* 负外边距，与容器对齐 */
+  transition: background-color 0.3s ease; /* 添加过渡效果 */
+}
+
+.log-container { /* 日志容器 */
+  display:flexbox; /* 使用flexbox布局 */
+  flex-direction: column; /* 垂直方向布局 */
+  border-radius: 6px; /* 设置圆角 */
+  padding: 8px; /* 设置内边距 */
+  height: 312px; /* 保持您原有的固定高度 */
+  max-height: 312px; /* 设置最大高度 */
+  overflow-x: scroll; /* 水平方向溢出时显示滚动条 */
+  overflow-y: auto; /* 垂直方向溢出时显示滚动条 */
+  background-color: var(--bg-tertiary); /* 设置背景颜色 */
+  box-shadow: 0px 0px 4px var(--shadow-color-dark); /* 添加阴影 */
+  font-family: "Consolas", monospace; /* 设置字体 */
+  font-size: 13px; /* 设置字体大小 */
+  white-space: pre-wrap; /* 保留空白字符并自动换行 */
+  line-height: 1.4; /* 设置行高 */
+  transition: background-color 0.3s ease, box-shadow 0.3s ease; /* 添加过渡效果 */
+}
+
+/* 进度条样式 */
+/* 模拟进度条容器 */
+.custom-progress { /* 进度条容器 */
+  width: 100%; /* 设置宽度为100% */
+  height: 25px; /* 设置高度 */
+  border-radius: 25px; /* 设置圆角 */
+  background: var(--bg-quaternary); /* 设置背景颜色 */
+  box-shadow: 0px 0px 4px 0px var(--shadow-color-dark); /* 添加阴影 */
+  overflow: hidden; /* 隐藏溢出内容 */
+  position: relative; /* 设置相对定位 */
+  margin-bottom: 16px; /* 设置底部外边距 */
+  transition: background-color 0.3s ease, box-shadow 0.3s ease; /* 添加过渡效果 */
+}
+
+/* 模拟进度值 */
+.custom-progress-bar { /* 进度条 */
+  height: 100%; /* 设置高度为100% */
+  border-radius: 25px; /* 设置圆角 */
+  background: var(--accent-color);/* 设置背景颜色和渐变 */
+  width: 60%; /* 进度值，通过JS动态修改 */
+  transition: width 0.3s ease, background-color 0.3s ease; /* 平滑过渡 */
+}
+
+/* 进度文字（可选） */
+.custom-progress-text { /* 进度条文字 */
+  position: absolute; /* 设置绝对定位 */
+  top: 0; /* 上对齐 */
+  left: 0; /* 左对齐 */
+  width: 100%; /* 设置宽度为100% */
+  height: 100%; /* 设置高度为100% */
+  display: flex; /* 使用flex布局 */
+  align-items: center; /* 垂直居中对齐 */
+  justify-content: center; /* 水平居中对齐 */
+  font-size: 12px; /* 设置字体大小 */
+  color: var(--text-primary); /* 设置字体颜色 */
+  transition: color 0.3s ease; /* 添加过渡效果 */
+}
+
+/* 滚动条样式 - 亮色主题 */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-tertiary);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--accent-color);
+  border-radius: 4px;
+  transition: background-color 0.3s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-color-dark);
+}
