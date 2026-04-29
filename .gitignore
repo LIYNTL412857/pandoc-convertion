@@ -1,4 +1,66 @@
-# 忽略 node 依赖目录
+# 日志文件
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# 依赖目录 (核心：必须忽略，否则必出大文件问题)
 node_modules/
-# 忽略 pandoc 目录
+.pnpm-store/
 pandoc/
+
+# 编辑器配置与缓存
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# 环境变量文件 (敏感信息)
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Electron 编译输出 & 打包产物 (核心：打包生成的exe、dmg等都在这里)
+dist/
+out/
+release/
+build/
+*.exe
+*.dll
+*.pdb
+*.dmg
+*.pkg
+*.zip
+*.tar.gz
+*.AppImage
+*.snap
+*.deb
+*.rpm
+
+# 测试覆盖率
+coverage/
+.nyc_output/
+
+# 临时文件
+tmp/
+temp/
+*.tmp
+.cache/
+.parcel-cache/
+.next/
+.nuxt/
+
+# 类型定义缓存
+*.tsbuildinfo
+
